@@ -1,0 +1,186 @@
+{% extends 'base.html' %}
+
+{% block title %}İlan Ara - Düzce Emlak{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <!-- Filtreler Sidebar -->
+        <div class="col-lg-3">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-filter"></i> Filtrele</h5>
+                </div>
+                <div class="card-body">
+                    <form method="get" id="filtre-form">
+                        <!-- Arama Kelimesi -->
+                        <div class="mb-3">
+                            <label class="form-label">Anahtar Kelime</label>
+                            <input type="text" name="q" class="form-control" value="{{ sorgu }}" placeholder="İlan ara...">
+                        </div>
+                        
+                        <!-- Emlak Tipi -->
+                        <div class="mb-3">
+                            <label class="form-label">Emlak Tipi</label>
+                            <select name="emlak_tipi" class="form-select">
+                                <option value="">Tümü</option>
+                                <option value="satilik" {% if filtreler.emlak_tipi == 'satilik' %}selected{% endif %}>Satılık</option>
+                                <option value="kiralik" {% if filtreler.emlak_tipi == 'kiralik' %}selected{% endif %}>Kiralık</option>
+                                <option value="gunluk_kiralik" {% if filtreler.emlak_tipi == 'gunluk_kiralik' %}selected{% endif %}>Günlük Kiralık</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Kategori -->
+                        <div class="mb-3">
+                            <label class="form-label">Kategori</label>
+                            <select name="kategori" class="form-select">
+                                <option value="">Tümü</option>
+                                <option value="daire" {% if filtreler.kategori == 'daire' %}selected{% endif %}>Daire</option>
+                                <option value="villa" {% if filtreler.kategori == 'villa' %}selected{% endif %}>Villa</option>
+                                <option value="mustakil" {% if filtreler.kategori == 'mustakil' %}selected{% endif %}>Müstakil Ev</option>
+                                <option value="residence" {% if filtreler.kategori == 'residence' %}selected{% endif %}>Residence</option>
+                                <option value="arsa" {% if filtreler.kategori == 'arsa' %}selected{% endif %}>Arsa</option>
+                                <option value="isyeri" {% if filtreler.kategori == 'isyeri' %}selected{% endif %}>İş Yeri</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Fiyat Aralığı -->
+                        <div class="mb-3">
+                            <label class="form-label">Fiyat Aralığı (TL)</label>
+                            <div class="row g-2">
+                                <div class="col-6">
+                                    <input type="number" name="min_fiyat" class="form-control" value="{{ filtreler.min_fiyat }}" placeholder="Min">
+                                </div>
+                                <div class="col-6">
+                                    <input type="number" name="max_fiyat" class="form-control" value="{{ filtreler.max_fiyat }}" placeholder="Max">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- İlçe -->
+                        <div class="mb-3">
+                            <label class="form-label">İlçe</label>
+                            <input type="text" name="ilce" class="form-control" value="{{ filtreler.ilce }}" placeholder="İlçe adı...">
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-search"></i> Filtrele
+                        </button>
+                        <a href="{% url 'ilan_ara' %}" class="btn btn-outline-secondary w-100 mt-2">
+                            <i class="fas fa-times"></i> Temizle
+                        </a>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- İlan Listesi -->
+        <div class="col-lg-9">
+            <!-- Sonuç Bilgisi -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4>
+                    {% if sorgu or filtreler.emlak_tipi or filtreler.kategori %}
+                    Arama Sonuçları
+                    {% else %}
+                    Tüm İlanlar
+                    {% endif %}
+                    <small class="text-muted">({{ ilanlar.count }} ilan bulundu)</small>
+                </h4>
+                
+                <div class="dropdown">
+                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-sort"></i> Sırala
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#">En Yeni</a></li>
+                        <li><a class="dropdown-item" href="#">Fiyat (Artan)</a></li>
+                        <li><a class="dropdown-item" href="#">Fiyat (Azalan)</a></li>
+                        <li><a class="dropdown-item" href="#">Metrekare (Büyük)</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- İlan Grid -->
+            <div class="row g-4">
+                {% for ilan in ilanlar %}
+                <div class="col-md-6 col-xl-4">
+                    <div class="card ilan-kart h-100 shadow-sm">
+                        {% if ilan.resimler.first %}
+                        <img src="{{ ilan.resimler.first.resim.url }}" class="card-img-top" alt="{{ ilan.baslik }}" style="height: 200px; object-fit: cover;">
+                        {% else %}
+                        <img src="https://via.placeholder.com/300x200?text=Resim+Yok" class="card-img-top" alt="Resim Yok" style="height: 200px; object-fit: cover;">
+                        {% endif %}
+                        
+                        <div class="card-body d-flex flex-column">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <span class="badge bg-primary">{{ ilan.get_emlak_tipi_display }}</span>
+                                <span class="badge bg-secondary">{{ ilan.get_kategori_display }}</span>
+                            </div>
+                            
+                            <h5 class="card-title">{{ ilan.baslik }}</h5>
+                            <p class="card-text text-muted small">
+                                <i class="fas fa-map-marker-alt"></i> {{ ilan.ilce }}, {{ ilan.mahalle }}
+                            </p>
+                            
+                            <div class="property-details mt-2">
+                                <small class="text-muted">
+                                    <i class="fas fa-ruler-combined"></i> {{ ilan.metrekare }} m² |
+                                    <i class="fas fa-bed"></i> {{ ilan.oda_sayisi }} |
+                                    <i class="fas fa-building"></i> {{ ilan.bina_yasi|default:"-" }} yaşında
+                                </small>
+                            </div>
+                            
+                            <div class="mt-auto">
+                                <div class="d-flex justify-content-between align-items-center mt-3">
+                                    <span class="fiyat h5 mb-0">{{ ilan.fiyat }} TL</span>
+                                    {% if user.is_authenticated %}
+                                    <a href="{% url 'favori_ekle' ilan.id %}" class="btn btn-outline-danger btn-sm">
+                                        <i class="far fa-heart"></i>
+                                    </a>
+                                    {% endif %}
+                                </div>
+                                <a href="{{ ilan.get_absolute_url }}" class="btn btn-primary btn-sm w-100 mt-2">
+                                    Detaylı İncele
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12 text-center py-5">
+                    <i class="fas fa-home fa-4x text-muted mb-3"></i>
+                    <h4 class="text-muted">Aramanıza uygun ilan bulunamadı</h4>
+                    <p class="text-muted">Filtreleri değiştirerek tekrar deneyin.</p>
+                    <a href="{% url 'ilan_ara' %}" class="btn btn-primary">Filtreleri Temizle</a>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <!-- Sayfalama -->
+            {% if ilanlar.has_other_pages %}
+            <nav aria-label="Sayfalama" class="mt-5">
+                <ul class="pagination justify-content-center">
+                    {% if ilanlar.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ ilanlar.previous_page_number }}{% for key,value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">Önceki</a>
+                    </li>
+                    {% endif %}
+                    
+                    {% for i in ilanlar.paginator.page_range %}
+                    <li class="page-item {% if ilanlar.number == i %}active{% endif %}">
+                        <a class="page-link" href="?page={{ i }}{% for key,value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">{{ i }}</a>
+                    </li>
+                    {% endfor %}
+                    
+                    {% if ilanlar.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ ilanlar.next_page_number }}{% for key,value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">Sonraki</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

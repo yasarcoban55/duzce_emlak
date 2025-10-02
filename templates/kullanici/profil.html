@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+
+{% block title %}Profil - Düzce Emlak{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-lg-3 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    {% if user.profil.profil_resmi %}
+                    <img src="{{ user.profil.profil_resmi.url }}" class="rounded-circle mb-3" width="100" height="100" alt="Profil">
+                    {% else %}
+                    <div class="rounded-circle bg-secondary d-inline-flex align-items-center justify-content-center mb-3" style="width: 100px; height: 100px;">
+                        <i class="fas fa-user text-white fa-3x"></i>
+                    </div>
+                    {% endif %}
+                    
+                    <h5>{{ user.get_full_name|default:user.username }}</h5>
+                    <p class="text-muted">@{{ user.username }}</p>
+                    
+                    <div class="list-group">
+                        <a href="#profil-bilgileri" class="list-group-item list-group-item-action active">
+                            <i class="fas fa-user"></i> Profil Bilgileri
+                        </a>
+                        <a href="{% url 'ilan_olustur' %}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-plus"></i> Yeni İlan
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action">
+                            <i class="fas fa-list"></i> İlanlarım
+                        </a>
+                        <a href="{% url 'favori_listesi' %}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-heart"></i> Favorilerim
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Profil İçeriği -->
+        <div class="col-lg-9">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h4 class="mb-0"><i class="fas fa-user-cog"></i> Profil Bilgileri</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data" novalidate>
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <!-- Kullanıcı Bilgileri -->
+                            <div class="col-md-6">
+                                <h5 class="border-bottom pb-2 mb-3">Kullanıcı Bilgileri</h5>
+                                
+                                <div class="mb-3">
+                                    <label for="{{ k_form.first_name.id_for_label }}" class="form-label">Ad</label>
+                                    {{ k_form.first_name }}
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="{{ k_form.last_name.id_for_label }}" class="form-label">Soyad</label>
+                                    {{ k_form.last_name }}
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="{{ k_form.email.id_for_label }}" class="form-label">E-posta</label>
+                                    {{ k_form.email }}
+                                </div>
+                            </div>
+                            
+                            <!-- Profil Bilgileri -->
+                            <div class="col-md-6">
+                                <h5 class="border-bottom pb-2 mb-3">Profil Bilgileri</h5>
+                                
+                                <div class="mb-3">
+                                    <label for="{{ p_form.telefon.id_for_label }}" class="form-label">Telefon</label>
+                                    {{ p_form.telefon }}
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="{{ p_form.ilce.id_for_label }}" class="form-label">İlçe</label>
+                                    {{ p_form.ilce }}
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="{{ p_form.profil_resmi.id_for_label }}" class="form-label">Profil Resmi</label>
+                                    {{ p_form.profil_resmi }}
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="{{ p_form.aciklama.id_for_label }}" class="form-label">Hakkımda</label>
+                                    {{ p_form.aciklama }}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="border-top pt-3">
+                            <div class="d-flex justify-content-between">
+                                <a href="{% url 'anasayfa' %}" class="btn btn-secondary">İptal</a>
+                                <button type="submit" class="btn btn-primary">Güncelle</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- İstatistikler -->
+            <div class="row mt-4">
+                <div class="col-md-4">
+                    <div class="card text-center bg-primary text-white">
+                        <div class="card-body">
+                            <h3>{{ aktif_ilan_count|default:0 }}</h3>
+                            <p class="mb-0">Aktif İlan</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card text-center bg-success text-white">
+                        <div class="card-body">
+                            <h3>{{ toplam_ilan_count|default:0 }}</h3>
+                            <p class="mb-0">Toplam İlan</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card text-center bg-info text-white">
+                        <div class="card-body">
+                            <h3>{{ favori_count|default:0 }}</h3>
+                            <p class="mb-0">Favori</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Form alanlarına Bootstrap class'ları ekleme
+document.addEventListener('DOMContentLoaded', function() {
+    const inputs = document.querySelectorAll('input, textarea, select');
+    inputs.forEach(input => {
+        input.classList.add('form-control');
+    });
+});
+</script>
+{% endblock %}

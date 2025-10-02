@@ -1,0 +1,230 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ ilan.baslik }} - Düzce Emlak{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'anasayfa' %}">Ana Sayfa</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'ilan_ara' %}">İlanlar</a></li>
+            <li class="breadcrumb-item active">{{ ilan.baslik|truncatewords:3 }}</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <!-- İlan Görselleri -->
+        <div class="col-lg-8">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body p-0">
+                    {% if ilan.resimler.all %}
+                    <div id="ilanCarousel" class="carousel slide" data-bs-ride="carousel">
+                        <div class="carousel-inner">
+                            {% for resim in ilan.resimler.all %}
+                            <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                                <img src="{{ resim.resim.url }}" class="d-block w-100" alt="{{ ilan.baslik }}" style="height: 500px; object-fit: cover;">
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% if ilan.resimler.count > 1 %}
+                        <button class="carousel-control-prev" type="button" data-bs-target="#ilanCarousel" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon"></span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#ilanCarousel" data-bs-slide="next">
+                            <span class="carousel-control-next-icon"></span>
+                        </button>
+                        {% endif %}
+                    </div>
+                    {% else %}
+                    <img src="https://via.placeholder.com/800x500?text=Resim+Yok" class="card-img-top" alt="Resim Yok" style="height: 500px; object-fit: cover;">
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- İlan Detayları -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-white">
+                    <h4 class="mb-0">İlan Detayları</h4>
+                </div>
+                <div class="card-body">
+                    <h3 class="card-title">{{ ilan.baslik }}</h3>
+                    <div class="d-flex flex-wrap gap-2 mb-3">
+                        <span class="badge bg-primary fs-6">{{ ilan.get_emlak_tipi_display }}</span>
+                        <span class="badge bg-secondary fs-6">{{ ilan.get_kategori_display }}</span>
+                        <span class="badge bg-success fs-6">{{ ilan.fiyat }} TL</span>
+                    </div>
+                    
+                    <p class="card-text">{{ ilan.aciklama|linebreaks }}</p>
+                    
+                    <hr>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>Özellikler</h5>
+                            <ul class="list-unstyled">
+                                <li><strong>Metrekare:</strong> {{ ilan.metrekare }} m²</li>
+                                <li><strong>Oda Sayısı:</strong> {{ ilan.oda_sayisi }}</li>
+                                <li><strong>Bina Yaşı:</strong> {{ ilan.bina_yasi|default:"Belirtilmemiş" }}</li>
+                                <li><strong>Bulunduğu Kat:</strong> {{ ilan.kat|default:"Belirtilmemiş" }}</li>
+                                <li><strong>Isıtma:</strong> {{ ilan.isitma|default:"Belirtilmemiş" }}</li>
+                                <li><strong>Eşya Durumu:</strong> {{ ilan.esya_durumu|yesno:"Eşyalı,Eşyasız" }}</li>
+                                {% if ilan.aidat %}
+                                <li><strong>Aidat:</strong> {{ ilan.aidat }} TL</li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Konum</h5>
+                            <ul class="list-unstyled">
+                                <li><strong>İlçe:</strong> {{ ilan.ilce }}</li>
+                                <li><strong>Mahalle:</strong> {{ ilan.mahalle }}</li>
+                                <li><strong>Adres:</strong> {{ ilan.adres }}</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sağ Sidebar -->
+        <div class="col-lg-4">
+            <!-- İlan Sahibi -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">İlan Sahibi</h5>
+                </div>
+                <div class="card-body text-center">
+                    {% if ilan.kullanici.profil.profil_resmi %}
+                    <img src="{{ ilan.kullanici.profil.profil_resmi.url }}" class="rounded-circle mb-3" width="80" height="80" alt="Profil">
+                    {% else %}
+                    <div class="rounded-circle bg-secondary d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                        <i class="fas fa-user text-white fa-2x"></i>
+                    </div>
+                    {% endif %}
+                    
+                    <h6>{{ ilan.kullanici.get_full_name|default:ilan.kullanici.username }}</h6>
+                    
+                    {% if ilan.kullanici.profil.telefon %}
+                    <p class="text-muted mb-2">
+                        <i class="fas fa-phone"></i> {{ ilan.kullanici.profil.telefon }}
+                    </p>
+                    {% endif %}
+                    
+                    {% if ilan.kullanici.profil.ilce %}
+                    <p class="text-muted mb-3">
+                        <i class="fas fa-map-marker-alt"></i> {{ ilan.kullanici.profil.ilce }}
+                    </p>
+                    {% endif %}
+                    
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-primary">
+                            <i class="fas fa-envelope"></i> Mesaj Gönder
+                        </button>
+                        <button class="btn btn-outline-secondary">
+                            <i class="fas fa-phone"></i> Ara
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- İşlem Butonları -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        {% if user.is_authenticated %}
+                            <a href="{% url 'favori_ekle' ilan.id %}" class="btn {% if favori_durumu %}btn-danger{% else %}btn-outline-danger{% endif %}">
+                                <i class="{% if favori_durumu %}fas{% else %}far{% endif %} fa-heart"></i>
+                                {% if favori_durumu %}Favorilerden Çıkar{% else %}Favorilere Ekle{% endif %}
+                            </a>
+                        {% else %}
+                            <a href="{% url 'giris' %}" class="btn btn-outline-danger">
+                                <i class="far fa-heart"></i> Favorilere Ekle
+                            </a>
+                        {% endif %}
+                        
+                        <button class="btn btn-outline-primary">
+                            <i class="fas fa-share-alt"></i> Paylaş
+                        </button>
+                        
+                        <button class="btn btn-outline-warning">
+                            <i class="fas fa-flag"></i> Şikayet Et
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- İlan Bilgileri -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">İlan Bilgileri</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <small class="text-muted">İlan No:</small>
+                            <br><strong>#{{ ilan.id }}</strong>
+                        </li>
+                        <li class="mb-2">
+                            <small class="text-muted">Yayınlanma Tarihi:</small>
+                            <br><strong>{{ ilan.olusturulma_tarihi|date:"d.m.Y" }}</strong>
+                        </li>
+                        <li class="mb-2">
+                            <small class="text-muted">Son Güncelleme:</small>
+                            <br><strong>{{ ilan.guncellenme_tarihi|date:"d.m.Y" }}</strong>
+                        </li>
+                        <li>
+                            <small class="text-muted">Görüntülenme:</small>
+                            <br><strong>{{ goruntulenme }}</strong>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Benzer İlanlar -->
+    {% if benzer_ilanlar %}
+    <div class="row mt-5">
+        <div class="col-12">
+            <h4 class="mb-4">Benzer İlanlar</h4>
+            <div class="row g-4">
+                {% for benzer in benzer_ilanlar %}
+                <div class="col-md-6 col-lg-3">
+                    <div class="card ilan-kart h-100 shadow-sm">
+                        {% if benzer.resimler.first %}
+                        <img src="{{ benzer.resimler.first.resim.url }}" class="card-img-top" alt="{{ benzer.baslik }}" style="height: 150px; object-fit: cover;">
+                        {% else %}
+                        <img src="https://via.placeholder.com/300x150?text=Resim+Yok" class="card-img-top" alt="Resim Yok" style="height: 150px; object-fit: cover;">
+                        {% endif %}
+                        
+                        <div class="card-body">
+                            <h6 class="card-title">{{ benzer.baslik|truncatewords:4 }}</h6>
+                            <p class="card-text text-muted small mb-2">
+                                <i class="fas fa-map-marker-alt"></i> {{ benzer.ilce }}
+                            </p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="fiyat">{{ benzer.fiyat }} TL</span>
+                                <a href="{{ benzer.get_absolute_url }}" class="btn btn-sm btn-outline-primary">İncele</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Basit görüntülenme sayacı
+document.addEventListener('DOMContentLoaded', function() {
+    // Burada AJAX ile görüntülenme sayısını artırabilirsiniz
+    console.log('İlan detay sayfası yüklendi');
+});
+</script>
+{% endblock %}

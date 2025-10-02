@@ -1,0 +1,415 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Favori İlanlarım - Düzce Emlak{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Başlık ve İstatistikler -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
+                <div class="d-flex align-items-center mb-3 mb-md-0">
+                    <div class="bg-danger rounded-circle p-3 me-3">
+                        <i class="fas fa-heart fa-2x text-white"></i>
+                    </div>
+                    <div>
+                        <h1 class="h3 mb-1">Favori İlanlarım</h1>
+                        <p class="text-muted mb-0">Beğendiğiniz emlak ilanları burada saklanır</p>
+                    </div>
+                </div>
+                
+                <div class="d-flex flex-wrap gap-3">
+                    <div class="bg-primary text-white rounded-pill px-4 py-2">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-home me-2"></i>
+                            <span class="fw-bold">{{ favori_ilanlar.count }}</span>
+                            <span class="ms-1">ilan</span>
+                        </div>
+                    </div>
+                    <a href="{% url 'ilan_ara' %}" class="btn btn-outline-primary">
+                        <i class="fas fa-search me-2"></i>Yeni İlan Ara
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Favori İlanlar Grid -->
+    {% if favori_ilanlar %}
+    <div class="row g-4">
+        {% for favori in favori_ilanlar %}
+        <div class="col-xl-4 col-lg-6 col-md-6">
+            <div class="card ilan-kart h-100 shadow-lg border-0 overflow-hidden">
+                <!-- İlan Resmi ve Badgeler -->
+                <div class="position-relative">
+                    {% if favori.ilan.resimler.first %}
+                    <img src="{{ favori.ilan.resimler.first.resim.url }}" 
+                         class="card-img-top" 
+                         alt="{{ favori.ilan.baslik }}" 
+                         style="height: 250px; object-fit: cover;">
+                    {% else %}
+                    <img src="https://via.placeholder.com/400x250/f8f9fa/6c757d?text=Resim+Yok" 
+                         class="card-img-top" 
+                         alt="Resim Yok" 
+                         style="height: 250px; object-fit: cover;">
+                    {% endif %}
+                    
+                    <!-- Favori Butonu -->
+                    <div class="position-absolute top-0 end-0 m-3">
+                        <a href="{% url 'favori_ekle' favori.ilan.id %}" 
+                           class="btn btn-danger btn-sm rounded-circle shadow"
+                           title="Favorilerden Çıkar"
+                           data-bs-toggle="tooltip"
+                           data-bs-placement="left">
+                            <i class="fas fa-heart-broken"></i>
+                        </a>
+                    </div>
+                    
+                    <!-- Emlak Tipi Badge -->
+                    <div class="position-absolute top-0 start-0 m-3">
+                        <span class="badge bg-primary bg-opacity-90 text-white fs-6 px-3 py-2">
+                            {{ favori.ilan.get_emlak_tipi_display }}
+                        </span>
+                    </div>
+                    
+                    <!-- Kategori Badge -->
+                    <div class="position-absolute bottom-0 start-0 m-3">
+                        <span class="badge bg-dark bg-opacity-75 text-white fs-6 px-3 py-2">
+                            {{ favori.ilan.get_kategori_display }}
+                        </span>
+                    </div>
+                </div>
+
+                <!-- İlan Detayları -->
+                <div class="card-body d-flex flex-column p-4">
+                    <!-- Başlık ve Konum -->
+                    <h5 class="card-title fw-bold text-dark mb-2 line-clamp-2" style="min-height: 3rem;">
+                        {{ favori.ilan.baslik }}
+                    </h5>
+                    
+                    <div class="d-flex align-items-center text-muted mb-3">
+                        <i class="fas fa-map-marker-alt text-danger me-2"></i>
+                        <span class="small">{{ favori.ilan.ilce }}, {{ favori.ilan.mahalle }}</span>
+                    </div>
+
+                    <!-- Özellikler Grid -->
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <div class="d-flex align-items-center text-muted small">
+                                <i class="fas fa-ruler-combined me-2"></i>
+                                <span>{{ favori.ilan.metrekare }} m²</span>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="d-flex align-items-center text-muted small">
+                                <i class="fas fa-bed me-2"></i>
+                                <span>{{ favori.ilan.oda_sayisi }}</span>
+                            </div>
+                        </div>
+                        {% if favori.ilan.bina_yasi %}
+                        <div class="col-6">
+                            <div class="d-flex align-items-center text-muted small">
+                                <i class="fas fa-building me-2"></i>
+                                <span>{{ favori.ilan.bina_yasi }} yaşında</span>
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% if favori.ilan.kat %}
+                        <div class="col-6">
+                            <div class="d-flex align-items-center text-muted small">
+                                <i class="fas fa-layer-group me-2"></i>
+                                <span>{{ favori.ilan.kat }}. kat</span>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Fiyat ve Aksiyon Butonları -->
+                    <div class="mt-auto pt-3 border-top">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="fiyat h4 fw-bold text-primary mb-0">
+                                    {{ favori.ilan.fiyat }} TL
+                                </span>
+                                {% if favori.ilan.emlak_tipi == 'kiralik' %}
+                                <small class="text-muted d-block">Aylık</small>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="btn-group">
+                                <a href="{{ favori.ilan.get_absolute_url }}" 
+                                   class="btn btn-primary px-3"
+                                   title="Detaylı İncele">
+                                    <i class="fas fa-eye me-1"></i>
+                                    <span class="d-none d-sm-inline">İncele</span>
+                                </a>
+                                <button class="btn btn-outline-secondary px-3"
+                                        title="Hızlı İşlemler"
+                                        data-bs-toggle="dropdown">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li>
+                                        <a class="dropdown-item" href="#">
+                                            <i class="fas fa-share-alt me-2"></i>Paylaş
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="#">
+                                            <i class="fas fa-flag me-2"></i>Şikayet Et
+                                        </a>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <a class="dropdown-item text-danger" 
+                                           href="{% url 'favori_ekle' favori.ilan.id %}">
+                                            <i class="fas fa-trash me-2"></i>Favorilerden Kaldır
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <!-- Eklenme Zamanı -->
+                        <div class="d-flex justify-content-between align-items-center mt-2">
+                            <small class="text-muted">
+                                <i class="far fa-clock me-1"></i>
+                                {{ favori.eklenme_tarihi|timesince }} önce eklendi
+                            </small>
+                            <small class="text-muted">
+                                <i class="far fa-calendar me-1"></i>
+                                {{ favori.eklenme_tarihi|date:"d.m.Y" }}
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Sayfalama (Gelecekte kullanım için) -->
+    {% if favori_ilanlar.paginator.num_pages > 1 %}
+    <div class="row mt-5">
+        <div class="col-12">
+            <nav aria-label="Favori ilanlar sayfalama">
+                <ul class="pagination justify-content-center">
+                    {% if favori_ilanlar.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ favori_ilanlar.previous_page_number }}">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                    </li>
+                    {% endif %}
+                    
+                    {% for num in favori_ilanlar.paginator.page_range %}
+                    <li class="page-item {% if favori_ilanlar.number == num %}active{% endif %}">
+                        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                    </li>
+                    {% endfor %}
+                    
+                    {% if favori_ilanlar.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ favori_ilanlar.next_page_number }}">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </div>
+    {% endif %}
+
+    {% else %}
+    <!-- Boş Favori Durumu -->
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8 text-center">
+            <div class="card border-0 shadow-lg">
+                <div class="card-body py-5">
+                    <div class="empty-state">
+                        <div class="empty-state-icon bg-light-danger rounded-circle d-inline-flex align-items-center justify-content-center mb-4" 
+                             style="width: 100px; height: 100px;">
+                            <i class="fas fa-heart-broken fa-3x text-danger"></i>
+                        </div>
+                        
+                        <h3 class="h4 text-dark mb-3">Henüz favori ilanınız yok</h3>
+                        
+                        <p class="text-muted mb-4">
+                            Beğendiğiniz emlak ilanlarını favorilere ekleyerek burada kolayca 
+                            erişebilir ve karşılaştırabilirsiniz.
+                        </p>
+                        
+                        <div class="d-flex flex-column flex-sm-row justify-content-center gap-3">
+                            <a href="{% url 'ilan_ara' %}" class="btn btn-primary btn-lg px-4">
+                                <i class="fas fa-search me-2"></i>İlan Ara
+                            </a>
+                            <a href="{% url 'anasayfa' %}" class="btn btn-outline-secondary btn-lg px-4">
+                                <i class="fas fa-home me-2"></i>Ana Sayfa
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Toplu İşlemler (Çoklu ilan varsa) -->
+    {% if favori_ilanlar.count > 1 %}
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="card bg-light border-0">
+                <div class="card-body py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-1">Toplu İşlemler</h6>
+                            <p class="text-muted small mb-0">Seçili ilanlarla toplu işlem yapın</p>
+                        </div>
+                        <div class="btn-group">
+                            <button class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-download me-1"></i>Listeyi İndir
+                            </button>
+                            <button class="btn btn-outline-danger btn-sm">
+                                <i class="fas fa-trash me-1"></i>Hepsini Temizle
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.ilan-kart {
+    transition: all 0.3s ease;
+    border: none;
+    border-radius: 15px;
+}
+
+.ilan-kart:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 25px rgba(0,0,0,0.15) !important;
+}
+
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.fiyat {
+    color: #2c5aa0;
+    font-weight: 700;
+}
+
+.empty-state-icon {
+    background: linear-gradient(135deg, #ffe6e6, #ffcccc);
+}
+
+.bg-light-danger {
+    background-color: #ffe6e6 !important;
+}
+
+.card-img-top {
+    transition: transform 0.3s ease;
+}
+
+.ilan-kart:hover .card-img-top {
+    transform: scale(1.05);
+}
+
+.badge {
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+
+.btn-group .dropdown-menu {
+    border: none;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    border-radius: 10px;
+}
+
+.btn-group .dropdown-item {
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    margin: 0.1rem;
+}
+
+.btn-group .dropdown-item:hover {
+    background-color: #f8f9fa;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .container.py-5 {
+        padding-top: 2rem !important;
+        padding-bottom: 2rem !important;
+    }
+    
+    .card-body.p-4 {
+        padding: 1.5rem !important;
+    }
+    
+    .h3.mb-1 {
+        font-size: 1.5rem !important;
+    }
+}
+
+/* Smooth animations */
+.card {
+    animation: fadeInUp 0.6s ease;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Tooltip'leri etkinleştir
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+    
+    // Favori kaldırma işlemi için onay dialog'u
+    var favoriKaldirBtn = document.querySelectorAll('a[href*="favori-ekle"]');
+    favoriKaldirBtn.forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+            if (!confirm('Bu ilanı favorilerinizden kaldırmak istediğinizden emin misiniz?')) {
+                e.preventDefault();
+            }
+        });
+    });
+    
+    // Kart hover efektleri
+    var ilanKartlari = document.querySelectorAll('.ilan-kart');
+    ilanKartlari.forEach(function(kart) {
+        kart.addEventListener('mouseenter', function() {
+            this.style.zIndex = '10';
+        });
+        
+        kart.addEventListener('mouseleave', function() {
+            this.style.zIndex = '1';
+        });
+    });
+});
+</script>
+{% endblock %}

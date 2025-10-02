@@ -1,0 +1,731 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}İlan Oluştur - Düzce Emlak{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-xl-10">
+            <!-- Başlık ve İlerleme Çubuğu -->
+            <div class="text-center mb-5">
+                <div class="d-flex align-items-center justify-content-center mb-3">
+                    <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center me-3" 
+                         style="width: 60px; height: 60px;">
+                        <i class="fas fa-plus-circle fa-2x text-white"></i>
+                    </div>
+                    <div class="text-start">
+                        <h1 class="h2 mb-1">Yeni İlan Oluştur</h1>
+                        <p class="text-muted mb-0">Emlak ilanınızı kolayca yayınlayın</p>
+                    </div>
+                </div>
+                
+                <!-- İlerleme Çubuğu -->
+                <div class="progress mb-4" style="height: 8px; max-width: 500px; margin: 0 auto;">
+                    <div class="progress-bar bg-success" role="progressbar" style="width: 100%" 
+                         aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+            </div>
+
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-gradient-primary text-white py-4">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-home me-3 fa-lg"></i>
+                        <div>
+                            <h4 class="mb-1">İlan Bilgileri</h4>
+                            <p class="mb-0 opacity-75">Tüm alanları eksiksiz doldurun</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card-body p-4 p-md-5">
+                    <form method="post" enctype="multipart/form-data" novalidate id="ilan-form">
+                        {% csrf_token %}
+
+                        <!-- Temel Bilgiler -->
+                        <div class="section-card mb-5">
+                            <div class="section-header d-flex align-items-center mb-4">
+                                <div class="icon-wrapper bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-3"
+                                     style="width: 50px; height: 50px;">
+                                    <i class="fas fa-info-circle text-primary fa-lg"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-1 text-dark fw-bold">Temel Bilgiler</h5>
+                                    <p class="text-muted mb-0">İlanınızın temel özelliklerini belirleyin</p>
+                                </div>
+                            </div>
+                            
+                            <div class="row g-4">
+                                <div class="col-12 col-md-6">
+                                    <div class="form-group">
+                                        <label for="{{ form.baslik.id_for_label }}" class="form-label fw-semibold text-dark mb-2">
+                                            İlan Başlığı *
+                                        </label>
+                                        {{ form.baslik }}
+                                        {% if form.baslik.errors %}
+                                        <div class="invalid-feedback d-block">{{ form.baslik.errors }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                <div class="col-12 col-md-6">
+                                    <div class="form-group">
+                                        <label for="{{ form.fiyat.id_for_label }}" class="form-label fw-semibold text-dark mb-2">
+                                            Fiyat (TL) *
+                                        </label>
+                                        {{ form.fiyat }}
+                                        {% if form.fiyat.errors %}
+                                        <div class="invalid-feedback d-block">{{ form.fiyat.errors }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                <div class="col-12 col-md-6">
+                                    <div class="form-group">
+                                        <label for="{{ form.emlak_tipi.id_for_label }}" class="form-label fw-semibold text-dark mb-2">
+                                            Emlak Tipi *
+                                        </label>
+                                        {{ form.emlak_tipi }}
+                                        {% if form.emlak_tipi.errors %}
+                                        <div class="invalid-feedback d-block">{{ form.emlak_tipi.errors }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                <div class="col-12 col-md-6">
+                                    <div class="form-group">
+                                        <label for="{{ form.kategori.id_for_label }}" class="form-label fw-semibold text-dark mb-2">
+                                            Kategori *
+                                        </label>
+                                        {{ form.kategori }}
+                                        {% if form.kategori.errors %}
+                                        <div class="invalid-feedback d-block">{{ form.kategori.errors }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Özellikler -->
+                        <div class="section-card mb-5">
+                            <div class="section-header d-flex align-items-center mb-4">
+                                <div class="icon-wrapper bg-success bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-3"
+                                     style="width: 50px; height: 50px;">
+                                    <i class="fas fa-list-alt text-success fa-lg"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-1 text-dark fw-bold">Özellikler</h5>
+                                    <p class="text-muted mb-0">Emlak özelliklerini detaylandırın</p>
+                                </div>
+                            </div>
+                            
+                            <div class="row g-4">
+                                <div class="col-6 col-md-4 col-lg-3">
+                                    <div class="form-group">
+                                        <label for="{{ form.metrekare.id_for_label }}" class="form-label fw-semibold text-dark mb-2">
+                                            Metrekare *
+                                        </label>
+                                        {{ form.metrekare }}
+                                        {% if form.metrekare.errors %}
+                                        <div class="invalid-feedback d-block">{{ form.metrekare.errors }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                <div class="col-6 col-md-4 col-lg-3">
+                                    <div class="form-group">
+                                        <label for="{{ form.oda_sayisi.id_for_label }}" class="form-label fw-semibold text-dark mb-2">
+                                            Oda Sayısı *
+                                        </label>
+                                        {{ form.oda_sayisi }}
+                                        {% if form.oda_sayisi.errors %}
+                                        <div class="invalid-feedback d-block">{{ form.oda_sayisi.errors }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                <div class="col-6 col-md-4 col-lg-3">
+                                    <div class="form-group">
+                                        <label for="{{ form.bina_yasi.id_for_label }}" class="form-label fw-semibold text-dark mb-2">
+                                            Bina Yaşı
+                                        </label>
+                                        {{ form.bina_yasi }}
+                                        {% if form.bina_yasi.errors %}
+                                        <div class="invalid-feedback d-block">{{ form.bina_yasi.errors }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                <div class="col-6 col-md-4 col-lg-3">
+                                    <div class="form-group">
+                                        <label for="{{ form.kat.id_for_label }}" class="form-label fw-semibold text-dark mb-2">
+                                            Bulunduğu Kat
+                                        </label>
+                                        {{ form.kat }}
+                                        {% if form.kat.errors %}
+                                        <div class="invalid-feedback d-block">{{ form.kat.errors }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                <div class="col-12 col-md-6">
+                                    <div class="form-group">
+                                        <label for="{{ form.isitma.id_for_label }}" class="form-label fw-semibold text-dark mb-2">
+                                            Isıtma Sistemi
+                                        </label>
+                                        {{ form.isitma }}
+                                        {% if form.isitma.errors %}
+                                        <div class="invalid-feedback d-block">{{ form.isitma.errors }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                <div class="col-12 col-md-6">
+                                    <div class="form-group">
+                                        <label for="{{ form.aidat.id_for_label }}" class="form-label fw-semibold text-dark mb-2">
+                                            Aidat (TL)
+                                        </label>
+                                        {{ form.aidat }}
+                                        {% if form.aidat.errors %}
+                                        <div class="invalid-feedback d-block">{{ form.aidat.errors }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                <div class="col-12">
+                                    <div class="form-check form-switch form-check-lg mt-3">
+                                        {{ form.esya_durumu }}
+                                        <label class="form-check-label fw-semibold text-dark" for="{{ form.esya_durumu.id_for_label }}">
+                                            <i class="fas fa-couch me-2"></i>Eşyalı Mı?
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Konum Bilgileri -->
+                        <div class="section-card mb-5">
+                            <div class="section-header d-flex align-items-center mb-4">
+                                <div class="icon-wrapper bg-warning bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-3"
+                                     style="width: 50px; height: 50px;">
+                                    <i class="fas fa-map-marker-alt text-warning fa-lg"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-1 text-dark fw-bold">Konum Bilgileri</h5>
+                                    <p class="text-muted mb-0">Emlak konumunu belirtin</p>
+                                </div>
+                            </div>
+                            
+                            <div class="row g-4">
+                                <div class="col-12 col-md-6">
+                                    <div class="form-group">
+                                        <label for="{{ form.ilce.id_for_label }}" class="form-label fw-semibold text-dark mb-2">
+                                            İlçe *
+                                        </label>
+                                        {{ form.ilce }}
+                                        {% if form.ilce.errors %}
+                                        <div class="invalid-feedback d-block">{{ form.ilce.errors }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                <div class="col-12 col-md-6">
+                                    <div class="form-group">
+                                        <label for="{{ form.mahalle.id_for_label }}" class="form-label fw-semibold text-dark mb-2">
+                                            Mahalle *
+                                        </label>
+                                        {{ form.mahalle }}
+                                        {% if form.mahalle.errors %}
+                                        <div class="invalid-feedback d-block">{{ form.mahalle.errors }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <label for="{{ form.adres.id_for_label }}" class="form-label fw-semibold text-dark mb-2">
+                                            Tam Adres *
+                                        </label>
+                                        {{ form.adres }}
+                                        {% if form.adres.errors %}
+                                        <div class="invalid-feedback d-block">{{ form.adres.errors }}</div>
+                                        {% endif %}
+                                        <div class="form-text mt-2">
+                                            <i class="fas fa-info-circle me-1"></i>
+                                            Sokak, apartman, daire no gibi detaylı adres bilgisi girin
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Açıklama -->
+                        <div class="section-card mb-5">
+                            <div class="section-header d-flex align-items-center mb-4">
+                                <div class="icon-wrapper bg-info bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-3"
+                                     style="width: 50px; height: 50px;">
+                                    <i class="fas fa-align-left text-info fa-lg"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-1 text-dark fw-bold">Açıklama</h5>
+                                    <p class="text-muted mb-0">İlanınızı detaylı şekilde anlatın</p>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="{{ form.aciklama.id_for_label }}" class="form-label fw-semibold text-dark mb-2">
+                                    Detaylı Açıklama *
+                                </label>
+                                {{ form.aciklama }}
+                                {% if form.aciklama.errors %}
+                                <div class="invalid-feedback d-block">{{ form.aciklama.errors }}</div>
+                                {% endif %}
+                                <div class="form-text mt-2">
+                                    <i class="fas fa-lightbulb me-1"></i>
+                                    Önemli özellikleri, avantajları ve öne çıkan detayları vurgulayın
+                                </div>
+                            </div>
+                            
+                            <div class="character-counter mt-2">
+                                <small class="text-muted">
+                                    <span id="character-count">0</span> karakter
+                                </small>
+                            </div>
+                        </div>
+
+                        <!-- Resim Yükleme -->
+                        <div class="section-card mb-5">
+                            <div class="section-header d-flex align-items-center mb-4">
+                                <div class="icon-wrapper bg-danger bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-3"
+                                     style="width: 50px; height: 50px;">
+                                    <i class="fas fa-images text-danger fa-lg"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-1 text-dark fw-bold">Resimler</h5>
+                                    <p class="text-muted mb-0">İlanınız için fotoğraflar ekleyin</p>
+                                </div>
+                            </div>
+                            
+                            <div class="upload-area border-2 border-dashed rounded-3 p-5 text-center mb-4"
+                                 id="upload-area">
+                                <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                                <h5 class="mb-2 text-dark">Resimleri Buraya Sürükleyin</h5>
+                                <p class="text-muted mb-3">veya</p>
+                                <input type="file" class="d-none" id="resimler" name="resimler" multiple accept="image/*">
+                                <label for="resimler" class="btn btn-primary px-4">
+                                    <i class="fas fa-folder-open me-2"></i>Dosya Seç
+                                </label>
+                                <div class="form-text mt-3">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    Birden fazla resim seçebilirsiniz. İlk resim kapak fotoğrafı olarak kullanılacaktır.
+                                    Maksimum 10MB dosya boyutu.
+                                </div>
+                            </div>
+                            
+                            <div id="resim-onizleme" class="row g-3"></div>
+                        </div>
+
+                        <!-- Onay ve Gönder -->
+                        <div class="border-top pt-5">
+                            <div class="form-check mb-4">
+                                <input class="form-check-input" type="checkbox" id="onay" required>
+                                <label class="form-check-label fw-semibold text-dark" for="onay">
+                                    <i class="fas fa-check-circle me-2 text-success"></i>
+                                    <a href="#" class="text-decoration-none">Kullanım koşullarını</a> okudum ve kabul ediyorum.
+                                </label>
+                            </div>
+                            
+                            <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
+                                <div class="text-center text-md-start">
+                                    <small class="text-muted">
+                                        <i class="fas fa-shield-alt me-1"></i>
+                                        Bilgileriniz güvende. 256-bit SSL şifreleme
+                                    </small>
+                                </div>
+                                
+                                <div class="d-flex gap-3">
+                                    <a href="{% url 'anasayfa' %}" class="btn btn-outline-secondary px-4">
+                                        <i class="fas fa-times me-2"></i>İptal
+                                    </a>
+                                    <button type="submit" class="btn btn-success px-4 btn-lg" id="submit-btn">
+                                        <i class="fas fa-paper-plane me-2"></i>İlanı Yayınla
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.bg-gradient-primary {
+    background: linear-gradient(135deg, #2c5aa0 0%, #3a7bd5 100%) !important;
+}
+
+.section-card {
+    background: #f8f9fa;
+    border-radius: 15px;
+    padding: 2rem;
+    border-left: 4px solid #2c5aa0;
+}
+
+.section-header {
+    border-bottom: 2px solid #e9ecef;
+    padding-bottom: 1rem;
+}
+
+.icon-wrapper {
+    transition: transform 0.3s ease;
+}
+
+.section-card:hover .icon-wrapper {
+    transform: scale(1.1);
+}
+
+.form-group {
+    margin-bottom: 0;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #2d3748;
+}
+
+.form-control, .form-select {
+    border-radius: 10px;
+    border: 2px solid #e2e8f0;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background-color: #fff;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #2c5aa0;
+    box-shadow: 0 0 0 0.2rem rgba(44, 90, 160, 0.25);
+    background-color: #fff;
+}
+
+.form-control::placeholder {
+    color: #a0aec0;
+}
+
+textarea.form-control {
+    min-height: 120px;
+    resize: vertical;
+}
+
+.upload-area {
+    background: #f8f9fa;
+    border-color: #dee2e6 !important;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.upload-area:hover {
+    background: #e9ecef;
+    border-color: #2c5aa0 !important;
+}
+
+.upload-area.dragover {
+    background: #e3f2fd;
+    border-color: #2c5aa0 !important;
+    transform: scale(1.02);
+}
+
+.border-dashed {
+    border-style: dashed !important;
+}
+
+.character-counter {
+    text-align: right;
+    margin-top: 0.5rem;
+}
+
+.form-check-input {
+    width: 1.2em;
+    height: 1.2em;
+    margin-top: 0.15em;
+}
+
+.form-check-input:checked {
+    background-color: #28a745;
+    border-color: #28a745;
+}
+
+.form-switch .form-check-input {
+    width: 3rem;
+    height: 1.5rem;
+}
+
+.form-switch .form-check-label {
+    margin-left: 0.5rem;
+    font-size: 1.1rem;
+}
+
+#resim-onizleme .preview-item {
+    position: relative;
+    transition: transform 0.3s ease;
+}
+
+#resim-onizleme .preview-item:hover {
+    transform: scale(1.05);
+}
+
+#resim-onizleme .remove-btn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+#resim-onizleme .preview-item:hover .remove-btn {
+    opacity: 1;
+}
+
+.btn-success {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.btn-success:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
+}
+
+/* Animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.section-card {
+    animation: fadeInUp 0.6s ease;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .container.py-5 {
+        padding-top: 1rem !important;
+        padding-bottom: 1rem !important;
+    }
+    
+    .card-body.p-4 {
+        padding: 1.5rem !important;
+    }
+    
+    .section-card {
+        padding: 1.5rem;
+    }
+    
+    .upload-area {
+        padding: 2rem 1rem !important;
+    }
+    
+    .form-control, .form-select {
+        padding: 0.65rem 0.75rem;
+        font-size: 0.9rem;
+    }
+}
+
+/* Label ve text düzeltmeleri */
+.text-dark {
+    color: #2d3748 !important;
+}
+
+.fw-semibold {
+    font-weight: 600 !important;
+}
+
+.form-text {
+    color: #718096 !important;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+.invalid-feedback {
+    display: block;
+    width: 100%;
+    margin-top: 0.25rem;
+    font-size: 0.875rem;
+    color: #e53e3e;
+}
+
+/* Input grupları için düzenlemeler */
+.form-group {
+    position: relative;
+}
+
+.form-group .form-control:focus,
+.form-group .form-select:focus {
+    z-index: 1;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Form alanlarına Bootstrap class'ları ekleme
+    const inputs = document.querySelectorAll('input, select, textarea');
+    inputs.forEach(input => {
+        if (!input.classList.contains('btn') && !input.classList.contains('form-check-input')) {
+            input.classList.add('form-control');
+        }
+    });
+
+    // Select element'lerine özel class
+    const selects = document.querySelectorAll('select');
+    selects.forEach(select => {
+        select.classList.add('form-select');
+    });
+
+    // Karakter sayacı
+    const aciklamaTextarea = document.getElementById('{{ form.aciklama.id_for_label }}');
+    const characterCount = document.getElementById('character-count');
+    
+    if (aciklamaTextarea && characterCount) {
+        aciklamaTextarea.addEventListener('input', function() {
+            characterCount.textContent = this.value.length;
+            
+            if (this.value.length > 500) {
+                characterCount.classList.add('text-danger');
+            } else {
+                characterCount.classList.remove('text-danger');
+            }
+        });
+        
+        // Başlangıç değeri
+        characterCount.textContent = aciklamaTextarea.value.length;
+    }
+
+    // Resim yükleme alanı
+    const uploadArea = document.getElementById('upload-area');
+    const fileInput = document.getElementById('resimler');
+    const previewArea = document.getElementById('resim-onizleme');
+
+    // Sürükle bırak işlevselliği
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        uploadArea.addEventListener(eventName, preventDefaults, false);
+    });
+
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+        uploadArea.addEventListener(eventName, highlight, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        uploadArea.addEventListener(eventName, unhighlight, false);
+    });
+
+    function highlight() {
+        uploadArea.classList.add('dragover');
+    }
+
+    function unhighlight() {
+        uploadArea.classList.remove('dragover');
+    }
+
+    uploadArea.addEventListener('drop', handleDrop, false);
+
+    function handleDrop(e) {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        fileInput.files = files;
+        handleFiles(files);
+    }
+
+    fileInput.addEventListener('change', function() {
+        handleFiles(this.files);
+    });
+
+    function handleFiles(files) {
+        previewArea.innerHTML = '';
+        
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            
+            if (!file.type.match('image.*')) {
+                alert('Sadece resim dosyaları yükleyebilirsiniz.');
+                continue;
+            }
+            
+            if (file.size > 10 * 1024 * 1024) {
+                alert('Dosya boyutu 10MB\'dan küçük olmalıdır.');
+                continue;
+            }
+            
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                const col = document.createElement('div');
+                col.className = 'col-6 col-md-4 col-lg-3 preview-item';
+                
+                const previewContainer = document.createElement('div');
+                previewContainer.className = 'position-relative';
+                
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.className = 'img-thumbnail w-100';
+                img.style.height = '150px';
+                img.style.objectFit = 'cover';
+                img.style.borderRadius = '10px';
+                
+                const removeBtn = document.createElement('button');
+                removeBtn.type = 'button';
+                removeBtn.className = 'remove-btn btn btn-danger btn-sm rounded-circle';
+                removeBtn.innerHTML = '<i class="fas fa-times"></i>';
+                removeBtn.title = 'Kaldır';
+                
+                removeBtn.addEventListener('click', function() {
+                    col.remove();
+                });
+                
+                previewContainer.appendChild(img);
+                previewContainer.appendChild(removeBtn);
+                col.appendChild(previewContainer);
+                previewArea.appendChild(col);
+            }
+            
+            reader.readAsDataURL(file);
+        }
+    }
+
+    // Form gönderme animasyonu
+    const form = document.getElementById('ilan-form');
+    const submitBtn = document.getElementById('submit-btn');
+    
+    if (form && submitBtn) {
+        form.addEventListener('submit', function() {
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Yayınlanıyor...';
+            submitBtn.disabled = true;
+        });
+    }
+
+    // Sayfa yüklendiğinde animasyon
+    const sections = document.querySelectorAll('.section-card');
+    sections.forEach((section, index) => {
+        section.style.animationDelay = `${index * 0.1}s`;
+    });
+});
+</script>
+{% endblock %}
